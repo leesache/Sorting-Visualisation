@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) [Year] [Author Name]
+Copyright (c) 2024 Rushan Valimkhanov
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ import (
 const (
 	screenWidth  = 20
 	screenHeight = 20
-	arraySize    = 12
+	arraySize    = 15
 )
 
 func main() {
@@ -50,7 +50,7 @@ func main() {
 		log.Fatalf("Error initializing screen: %v", err)
 	}
 
-	screen.SetStyle(tcell.StyleDefault.Background(tcell.ColorBlack).Foreground(tcell.ColorWhite))
+	screen.SetStyle(tcell.StyleDefault.Background(tcell.ColorHotPink).Foreground(tcell.ColorWhite))
 
 	slice := sliceRandomInitialize(arraySize)
 
@@ -77,7 +77,7 @@ func main() {
 	for {
 		if !isSortedNow {
 			elapsedTime = time.Since(start)
-			if flag == 500000 {
+			if flag == 150000 {
 				visualizeArray(screen, slice, count, elapsedTime, isSortedNow)
 				flag = 0
 			}
@@ -145,11 +145,13 @@ func visualizeArray(screen tcell.Screen, arr []int, iteration uint64, elapsedTim
 	iterationText := fmt.Sprintf("Iteration: %d", iteration)
 	operationsPerSecond := float64(iteration) / elapsedTime.Seconds()
 	speedText := fmt.Sprintf("Speed: %.2f ops/sec", operationsPerSecond)
+	estimatedTime := fmt.Sprintf("Estimated time: %ds", factorial(int64(arraySize))/int64(operationsPerSecond))
 
 	yPosition := screenHeight + 2
 	timeX := 1
 	iterationX := 1
 	speedX := 1
+	estimatedTimeX := 1
 
 	timeStyle := tcell.StyleDefault.Foreground(tcell.ColorWhite)
 
@@ -167,6 +169,19 @@ func visualizeArray(screen tcell.Screen, arr []int, iteration uint64, elapsedTim
 		screen.SetContent(timeX, yPosition+1, ch, nil, timeStyle)
 		timeX++
 	}
-
+	for _, ch := range estimatedTime {
+		screen.SetContent(estimatedTimeX, yPosition+2, ch, nil, timeStyle)
+		estimatedTimeX++
+	}
 	screen.Show()
+}
+
+func factorial(n int64) int64 {
+	if n < 0 {
+		return -1
+	}
+	if n == 0 {
+		return 1
+	}
+	return n * factorial(n-1)
 }
